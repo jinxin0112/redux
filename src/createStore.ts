@@ -1,18 +1,7 @@
-type Reducer = (state: any, type: string) => void;
-
-type Enhancer = () => void;
-
-interface Action {
-  type: string;
-  payload: any;
-}
-
-interface AnyAction extends Action {
-  [prop: string]: any;
-}
+import { Reducer, Enhancer, AnyAction } from './types';
 
 export default function createStore<T extends any>(
-  reducer: Reducer,
+  reducer: Reducer<T>,
   preloadedState: T,
   enhancer: Enhancer
 ) {
@@ -20,7 +9,7 @@ export default function createStore<T extends any>(
     throw new Error('Expected reducer to be a function.');
   }
 
-  let currentReducer: Reducer = reducer;
+  let currentReducer: Reducer<T> = reducer;
   let currentState: T = preloadedState;
   let currentListeners: any[] = [];
   let nextListeners: any[] = currentListeners;
@@ -53,7 +42,7 @@ export default function createStore<T extends any>(
     };
   }
 
-  function dispatch(action: Action) {
+  function dispatch(action: AnyAction) {
     if (typeof action.type === 'undefined') {
       throw new Error(
         `Actions may not have an undefined "type" property.
@@ -67,7 +56,7 @@ export default function createStore<T extends any>(
 
     try {
       isDispatching = true;
-      currentReducer(currentState, action.type);
+      currentState = currentReducer(currentState, action.type);
     } catch (error) {
       isDispatching = false;
     }
