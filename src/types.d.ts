@@ -1,6 +1,6 @@
-export type Reducer<T> = (state: T, action: AnyAction) => T;
+export type Reducer = (state: State, action: AnyAction) => State;
 
-export type Enhancer = () => void;
+export type Enhancer<T> = (createStore: T) => T;
 
 export interface Action {
   type: string;
@@ -18,3 +18,9 @@ export interface ActionCreaters {
 }
 
 export type Dispatch = (action: AnyAction) => void;
+
+export type State =
+  | {
+      [prop: string]: any;
+    }
+  | undefined;

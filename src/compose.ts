@@ -1,7 +1,6 @@
 // 执行后返回一个方法
-type AnyFunction = (...arg: any[]) => any;
 
-export default function compose(...funcs: AnyFunction[]) {
+export default function compose(...funcs: any[]) {
   if (funcs.length === 0) {
     return (arg: unknown) => arg;
   }
@@ -9,9 +8,5 @@ export default function compose(...funcs: AnyFunction[]) {
     return funcs[0];
   }
 
-  funcs.reduce((a, b) => {
-    return (...arg) => {
-      return a(b(...arg));
-    };
-  });
+  funcs.reduce((a, b) => (...arg: any[]) => a(b(...arg)));
 }

@@ -1,6 +1,6 @@
 import { Reducer, AnyAction } from './types';
 
-type Reducers = { [prop: string]: Reducer<any> };
+type Reducers = { [prop: string]: Reducer };
 type RootState = { [prop: string]: any };
 
 export default function combineReducer(reducers: Reducers) {
@@ -13,7 +13,7 @@ export default function combineReducer(reducers: Reducers) {
         pre[cur] = reducers[cur];
         return pre;
       },
-      {} as { [prop: string]: Reducer<any> }
+      {} as { [prop: string]: Reducer }
     );
 
   return function rootReducer(state: RootState, action: AnyAction): RootState {

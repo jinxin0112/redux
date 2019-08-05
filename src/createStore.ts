@@ -1,17 +1,27 @@
-import { Reducer, Enhancer, AnyAction } from './types';
+import { Reducer, Enhancer, AnyAction, State } from './types';
 import ActionTypes from './utils/actionTypes';
 
-export default function createStore<T extends any>(
-  reducer: Reducer<T>,
-  preloadedState: T,
-  enhancer: Enhancer
-) {
+type CreateStoreRes = {
+  getState: () => State;
+  dispatch: (action: AnyAction) => void;
+  subscribe: (fn: any) => () => void;
+};
+
+export default function createStore(
+  reducer: Reducer,
+  preloadedState?: State,
+  enhancer?: Enhancer<typeof createStore>
+): CreateStoreRes {
   if (typeof reducer !== 'function') {
     throw new Error('Expected reducer to be a function.');
   }
 
-  let currentReducer: Reducer<T> = reducer;
-  let currentState: T = preloadedState;
+  if (typeof enhancer === 'function') {
+    return enhancer(createStore)(reducer, preloadedState);
+  }
+
+  let currentReducer: Reducer = reducer;
+  let currentState: State = preloadedState;
   let currentListeners: any[] = [];
   let nextListeners: any[] = currentListeners;
   let isDispatching: boolean = false;
