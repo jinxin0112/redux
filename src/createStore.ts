@@ -1,4 +1,5 @@
 import { Reducer, Enhancer, AnyAction } from './types';
+import ActionTypes from './utils/actionTypes';
 
 export default function createStore<T extends any>(
   reducer: Reducer<T>,
@@ -56,7 +57,7 @@ export default function createStore<T extends any>(
 
     try {
       isDispatching = true;
-      currentState = currentReducer(currentState, action.type);
+      currentState = currentReducer(currentState, action);
     } catch (error) {
       isDispatching = false;
     }
@@ -65,6 +66,11 @@ export default function createStore<T extends any>(
     listeners.forEach(listener => listener());
     return action;
   }
+
+  // 初始化调用使currentState拿到reducer的初始值
+  dispatch({
+    type: ActionTypes.INIT
+  });
 
   return {
     getState,

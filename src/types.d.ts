@@ -1,10 +1,10 @@
-export type Reducer<T> = (state: T, type: string) => T;
+export type Reducer<T> = (state: T, action: AnyAction) => T;
 
 export type Enhancer = () => void;
 
 export interface Action {
   type: string;
-  payload: any;
+  payload?: any;
 }
 
 export interface AnyAction extends Action {
