@@ -1,19 +1,19 @@
-import { ActionCreaters, ActionCreater, Dispatch } from './types';
+import { ActionCreatorsMapObject, ActionCreator, Dispatch } from './types';
 
-function bindActionCreater(actionCreater: ActionCreater, dispatch: Dispatch) {
+function bindActionCreater(ActionCreator: ActionCreator, dispatch: Dispatch) {
   return (...args: unknown[]) => {
-    dispatch(actionCreater(...args));
+    dispatch(ActionCreator(...args));
   };
 }
 
-export default function bindActionCreaters(actionCreaters: ActionCreaters, dispatch: Dispatch) {
-  if (typeof actionCreaters === 'function') {
-    return bindActionCreater(actionCreaters, dispatch);
+export default function bindActionCreaters(actionCreators: ActionCreatorsMapObject, dispatch: Dispatch) {
+  if (typeof actionCreators === 'function') {
+    return bindActionCreater(actionCreators, dispatch);
   }
-  if (typeof actionCreaters === 'object') {
-    return Object.keys(actionCreaters).reduce(
+  if (typeof actionCreators === 'object') {
+    return Object.keys(actionCreators).reduce(
       (pre, key) => {
-        const action = actionCreaters[key];
+        const action = actionCreators[key];
         if (typeof action === 'function') {
           pre[key] = bindActionCreater(action, dispatch);
         }

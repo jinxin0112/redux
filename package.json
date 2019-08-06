@@ -4,5 +4,10 @@
   "main": "./src/index.js",
   "repository": "https://github.com/jinxin0112/redux.git",
   "author": "jinxin0112 <m18508218948@163.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "redux-thunk": "^2.3.0"
+  }
 }

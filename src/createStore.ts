@@ -1,17 +1,11 @@
-import { Reducer, Enhancer, AnyAction, State } from './types';
+import { Reducer, StoreEnhancer, AnyAction, Action, Dispatch, Store } from './types';
 import ActionTypes from './utils/actionTypes';
 
-type CreateStoreRes = {
-  getState: () => State;
-  dispatch: (action: AnyAction) => void;
-  subscribe: (fn: any) => () => void;
-};
-
-export default function createStore(
-  reducer: Reducer,
-  preloadedState?: State,
-  enhancer?: Enhancer<typeof createStore>
-): CreateStoreRes {
+export default function createStore<S, A extends Action>(
+  reducer: Reducer<S, A>,
+  preloadedState?: S,
+  enhancer?: StoreEnhancer<typeof createStore>
+): Store<S> {
   if (typeof reducer !== 'function') {
     throw new Error('Expected reducer to be a function.');
   }
@@ -20,8 +14,8 @@ export default function createStore(
     return enhancer(createStore)(reducer, preloadedState);
   }
 
-  let currentReducer: Reducer = reducer;
-  let currentState: State = preloadedState;
+  let currentReducer: Reducer<S, A> = reducer;
+  let currentState: S | undefined = preloadedState;
   let currentListeners: any[] = [];
   let nextListeners: any[] = currentListeners;
   let isDispatching: boolean = false;
@@ -33,7 +27,7 @@ export default function createStore(
   }
 
   function getState() {
-    return currentState;
+    return currentState as S;
   }
   function subscribe(listener: any) {
     if (typeof listener !== 'function') {
@@ -53,7 +47,7 @@ export default function createStore(
     };
   }
 
-  function dispatch(action: AnyAction) {
+  const dispatch: Dispatch = function(action) {
     if (typeof action.type === 'undefined') {
       throw new Error(
         `Actions may not have an undefined "type" property.
@@ -67,7 +61,7 @@ export default function createStore(
 
     try {
       isDispatching = true;
-      currentState = currentReducer(currentState, action);
+      currentState = currentReducer(currentState, action as any);
     } catch (error) {
       isDispatching = false;
     }
@@ -75,7 +69,7 @@ export default function createStore(
     const listeners = (currentListeners = nextListeners);
     listeners.forEach(listener => listener());
     return action;
-  }
+  };
 
   // 初始化调用使currentState拿到reducer的初始值
   dispatch({
